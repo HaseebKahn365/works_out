@@ -351,5 +351,5 @@ int calculateScore({pushupController, pullupController}) {
   int score = 0;
   int pushupCount = int.parse((pushupController != '' && pushupController != null) ? pushupController : '0');
   int pullupCount = int.parse((pullupController != '' && pullupController != null) ? pullupController : '0');
-  return score = (pushupCount + 3.5 * pullupCount).toInt();
+  return score = (pushupCount + 3.0 * pullupCount).toInt();
 }
