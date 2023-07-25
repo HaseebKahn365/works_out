@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "773443264958",
+    "project_id": "worksout-e9896",
+    "storage_bucket": "worksout-e9896.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773443264958:android:8df8292a9c8726e0d459ef",
+        "android_client_info": {
+          "package_name": "com.example.works_out"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "773443264958-749kj967fe68tj7mb76d0207077tgk1s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMgeBdggPayZm8JdYOnOZrVgEpRqviQT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "773443264958-749kj967fe68tj7mb76d0207077tgk1s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
