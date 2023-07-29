@@ -200,22 +200,20 @@ Future submitFormOnSave() async {
 //calculating score before modifying the local variables
 
       // Updating the document with the newly calculated score data
+      final calculatedScore =
+          calculateScore(pushupController: pushUpControllerCount, pullupController: pullUpControllerCount);
 
       //updating the year map before the year changes
       if (locDocYear == DateTime.now().year) {
         locDocYearMap[DateTime.now().year.toString()] = locDocYearMap[DateTime.now().year.toString()]! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // modifying the value of the current year key
+            calculatedScore; // modifying the value of the current year key
       } else {
         locDocYearMap[DateTime.now().year.toString()] = calculateScore(
             pushupController: pushUpControllerCount,
             pullupController:
                 pullUpControllerCount); // it will add previous year key and value to the map after the year changes
         locDocYearMap[DateTime.now().year.toString()] = locDocYearMap[DateTime.now().year.toString()]! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // modifying the value of the current year key
+            calculatedScore; // modifying the value of the current year key
       }
 
       //updating the yearRecord before the month changes
@@ -225,10 +223,7 @@ Future submitFormOnSave() async {
       } else {
         locDocYear = DateTime.now().year;
         locDocYearRec = 0; // clears the week if week changes
-        locDocYearRec = locDocYearRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new year
+        locDocYearRec = locDocYearRec! + calculatedScore; // adds the score to the new year
       }
 
       //updating the monthRecord before the week changes
@@ -240,10 +235,7 @@ Future submitFormOnSave() async {
       } else {
         locDocMonth = DateTime.now().month;
         locDocMonthRec = 0; // clears the week if week changes
-        locDocMonthRec = locDocMonthRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new month
+        locDocMonthRec = locDocMonthRec! + calculatedScore; // adds the score to the new month
 
         //best month record
         locDocBestMonth = (locDocMonthRec! >= locDocBestMonth!) ? locDocMonthRec : locDocBestMonth;
@@ -258,10 +250,7 @@ Future submitFormOnSave() async {
       } else {
         locDocWeek = (DateTime.now().day ~/ 7);
         locDocWeekRec = 0; // clears the week if week changes
-        locDocWeekRec = locDocWeekRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new week
+        locDocWeekRec = locDocWeekRec! + calculatedScore; // adds the score to the new week
         //best week record
         locDocBestWeek = (locDocWeekRec! >= locDocBestWeek!) ? locDocWeekRec : locDocBestWeek;
       }
@@ -279,10 +268,7 @@ Future submitFormOnSave() async {
       } else {
         locDocDayToday = DateTime.now().day;
         locDocDayRec = 0;
-        locDocDayRec = locDocDayRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new day
+        locDocDayRec = locDocDayRec! + calculatedScore; // adds the score to the new day
         //best day record
         locDocBestDay = (locDocDayRec! >= locDocBestDay!) ? locDocDayRec : locDocBestDay;
 
