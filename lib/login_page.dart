@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     textTheme = widget.textTheme ?? ThemeData.light().textTheme; // Use default text theme if null
     titleWidget = TextStyleExample(
       name: "Account Login",
-      style: TextStyle(fontSize: 35),
+      style: TextStyle(fontSize: 25),
     );
   }
 
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
       textTheme = themeData.textTheme;
       titleWidget = TextStyleExample(
         name: "Account Login",
-        style: TextStyle(fontSize: 35),
+        style: TextStyle(fontSize: 25),
       ); // Add this line
     });
   }
@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               SizedBox(
-                height: 50,
+                height: 20,
               ),
               SizedBox(
                 width: 300,
@@ -128,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                     FocusScope.of(context).requestFocus(_field2Focus);
                   },
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(15),
                     border: OutlineInputBorder(),
                     hintText: 'Email for Worksout',
                     prefixIcon: Icon(
@@ -142,11 +143,13 @@ class _LoginPageState extends State<LoginPage> {
                 child: TextField(
                   controller: _field2Controller,
                   focusNode: _field2Focus,
+                  obscureText: true,
                   textInputAction: TextInputAction.done,
                   onEditingComplete: () {
                     _field2Focus.unfocus();
                   },
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(15),
                     border: OutlineInputBorder(),
                     hintText: 'Password',
                     prefixIcon: Icon(
@@ -175,61 +178,73 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text(
                   'Login',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 1.2),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('If you wanna create a Worksout Account then'),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegistrationScreen(themeData: themeData, textTheme: textTheme)),
-                          (route) => false,
-                        );
-                      },
-                      child: Text(
-                        'Register',
-                      )),
-                ],
-              ),
-              Container(
-                width: 200,
-                height: 100,
-                child: Column(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    GestureDetector(
-                      onTap: () async {
-                        // Handle the onTap event here
-                        await signInWithGoogle();
-                        if (mounted) {
+                    Text(
+                      'If you wanna create a new Account then',
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                    TextButton(
+                        onPressed: () {
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => WorksOut()),
+                            MaterialPageRoute(
+                                builder: (context) => RegistrationScreen(themeData: themeData, textTheme: textTheme)),
                             (route) => false,
                           );
-                        }
-                      },
-                      child: Image.asset(
+                        },
+                        child: Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  width: 200,
+                  height: 100,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
                         'assets/images/google.png',
                         width: 40,
                         height: 40,
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Continue with Google',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                      SizedBox(height: 8),
+                      Text(
+                        'Continue with Google',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                onTap: () async {
+                  // Handle the onTap event here
+                  await signInWithGoogle();
+                  if (mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => WorksOut()),
+                      (route) => false,
+                    );
+                  }
+                },
               )
             ],
           ),

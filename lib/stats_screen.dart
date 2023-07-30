@@ -89,13 +89,16 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(
+          height: 15,
+        ),
         Container(
           height: 300,
           child: Card(
             color: Theme.of(context).colorScheme.onInverseSurface,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(15.0),
             ),
             elevation: 0,
             margin: EdgeInsets.all(7),
@@ -132,13 +135,16 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
           ),
         ),
         SizedBox(
-          height: 20,
+          height: 30,
         ),
 
         //I have left the below group to show the text data that will come from firestore.
         ColorGroup(
           children: [
-            ColorChip(label: 'Your Ranking                Coming soon!', color: widget.colorScheme.primary),
+            ColorChip(
+              label: 'Your Ranking                Coming soon!',
+              color: widget.colorScheme.primary,
+            ),
             ColorChip(
                 label: 'Today\'s Score                            $locDocDayRec',
                 color: widget.colorScheme.primaryContainer),

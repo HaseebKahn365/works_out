@@ -262,6 +262,8 @@ Future submitFormOnSave() async {
       } else {
         locDocDayToday = DateTime.now().day;
         locDocDayRec = 0;
+        locDocPushCount = 0;
+        locDocPullCount = 0;
         locDocDayRec = locDocDayRec! + calculatedScore; // adds the score to the new day
         //best day record
         locDocBestDay = (locDocDayRec! >= locDocBestDay!) ? locDocDayRec : locDocBestDay;
