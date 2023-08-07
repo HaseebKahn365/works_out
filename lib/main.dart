@@ -207,7 +207,6 @@ class _WorksOutState extends State<WorksOut> {
   initState() {
     super.initState();
     user = Auth().currentUser;
-    submitFormOnSave().then((value) {});
 
     themeData = updateThemes(colorSelected, useMaterial3, useLightMode);
   }

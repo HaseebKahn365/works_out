@@ -45,6 +45,7 @@ class ComponentScreen extends StatefulWidget {
 
 class _ComponentScreenState extends State<ComponentScreen> {
   final FocusNode _textFieldFocusNode1 = FocusNode();
+  late Future<void> _initDataFuture;
 
   final FocusNode _textFieldFocusNode2 = FocusNode();
   bool onlineStatus = false;
@@ -52,6 +53,28 @@ class _ComponentScreenState extends State<ComponentScreen> {
   final TextEditingController pushUpController = TextEditingController();
   final TextEditingController pullUpController = TextEditingController();
   final TextEditingController _textFieldControllerForNewWorkout = TextEditingController();
+
+  @override
+  void initState() {
+    _initDataFuture = _initData();
+    super.initState();
+  }
+
+  Future<void> _initData() async {
+    // Assuming submitFormOnSave() returns a Future that fetches data from Firestore
+    // For demonstration purposes, let's assume it's fetching push-up and pull-up data
+    await Future.wait([
+      submitFormOnSave(),
+      // Any other data fetching from Firestore can be added here
+    ]);
+    setState(() {
+      // Update the UI state after all data fetching is complete
+      locDocPushCount;
+      locDocPullCount;
+    });
+
+    // Once all data fetching is complete, you can update the UI state or perform other actions
+  }
 
   @override
   void dispose() {
@@ -70,7 +93,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Align(
-          alignment: Alignment.topRight,
+          alignment: Alignment.topCenter,
           child: SizedBox(
             width: _maxWidthConstraint,
             child: ListView(
