@@ -5,11 +5,9 @@ void main() {
   DateTime now = DateTime.now();
 
 // Format the date as an 8-digit integer (YYYYMMDD)
-  String formattedDate = DateFormat('yyyyMMdd').format(now);
-  int date = int.parse(formattedDate);
-  print('int time:  $date');
+  String key = DateFormat('yyyyMMdd').format(now);
 
-  print(formattedDate); // Output: 20230719 (for July 19, 2023)
+  print(key); // Output: 20230719 (for July 19, 2023)
 
   Map<String, int> pushMasterMap = {
     '20230824': 37,

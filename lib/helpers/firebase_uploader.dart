@@ -4,6 +4,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:works_out/component_screen.dart';
 
 import '../main.dart';
@@ -30,20 +31,8 @@ int? locDocBestMonth;
 bool? locDocIsBlocked;
 Map<String, int> locDocYearMap = {};
 //int keys cannot be uploaded to a firstore doucment. shit. now converting it to strings
-Map<String, int> locpushMasterMap = {
-  '20230824': 37,
-  '20230825': 38,
-  '20230826': 39,
-  '20230827': 40,
-  '20230828': 41,
-  '20230829': 42,
-  '20230830': 43,
-  '20230831': 44,
-  '20230901': 45,
-  '20230802': 46,
-  '20230804': 48,
-  '20230805': 49,
-};
+Map<String, int> locpushMasterMap =
+    {}; //leaving it null should be a problem becuase the data is intialized by initState
 
 Future submitFormOnSave() async {
   final uid = user!.uid;
@@ -105,20 +94,16 @@ Future submitFormOnSave() async {
       bestMonth = 0;
       isBlocked = false;
       docYearMap = {'$docYear': 0};
-      docpushMasterMap = {
-        '20230824': 37,
-        '20230825': 38,
-        '20230826': 39,
-        '20230827': 40,
-        '20230828': 41,
-        '20230829': 42,
-        '20230830': 43,
-        '20230831': 44,
-        '20230901': 45,
-        '20230802': 46,
-        '20230804': 48,
-        '20230805': 49,
-      };
+
+      //intializing today in docpushMasterMap as 0
+
+      //updating the locpushMasterMap
+      DateTime now = DateTime.now();
+
+// Format the date as an 8-digit integer (YYYYMMDD)
+      String key = DateFormat('yyyyMMdd').format(now);
+
+      docpushMasterMap = {key: 0};
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'userImage': userImage,
         'userName': userName,
@@ -207,7 +192,7 @@ Future submitFormOnSave() async {
       print('docYearMap: $docYearMap');
       print('docpushMasterMap: $docpushMasterMap');
 
-      // loading the downloading data onto the local variables for use.
+      // downloading and loading  data onto the local variables for use.
       locDocIsHaseeb = isHaseeb;
       locDocUserImage = userImage;
       locDocUserName = userName;
@@ -229,6 +214,8 @@ Future submitFormOnSave() async {
       locDocIsBlocked = isBlocked;
       locDocYearMap = docYearMap;
       locpushMasterMap = docpushMasterMap;
+
+      print('************ locpushMasterMap: ${locpushMasterMap}\n\n\n\n');
 
 //calculating score before modifying the local variables
 
@@ -292,7 +279,32 @@ Future submitFormOnSave() async {
         locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
         //calculate today's pullups:
         locDocPullCount = locDocPullCount! + int.parse(pullUpControllerCount);
+
+        //updating the locpushMasterMap
+        DateTime now = DateTime.now();
+
+// Format the date as an 8-digit integer (YYYYMMDD)
+        String key = DateFormat('yyyyMMdd').format(now);
+
+        print(key); // Output: 20230719 (for July 19, 2023)
+
+        locpushMasterMap[key] = locDocPushCount!;
       } else {
+        //calculate today's pushups:
+        locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
+        //calculate today's pullups:
+        locDocPullCount = locDocPullCount! + int.parse(pullUpControllerCount);
+
+        //updating the locpushMasterMap
+        DateTime now = DateTime.now();
+
+// Format the date as an 8-digit integer (YYYYMMDD)
+        String key = DateFormat('yyyyMMdd').format(now);
+
+        print(key); // Output: 20230719 (for July 19, 2023)
+
+        locpushMasterMap[key] = locDocPushCount!;
+
         locDocDayToday = DateTime.now().day;
         locDocDayRec = 0;
         locDocPushCount = 0;
@@ -300,11 +312,6 @@ Future submitFormOnSave() async {
         locDocDayRec = locDocDayRec! + calculatedScore; // adds the score to the new day
         //best day record
         locDocBestDay = (locDocDayRec! >= locDocBestDay!) ? locDocDayRec : locDocBestDay;
-
-        //calculate today's pushups:
-        locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
-        //calculate today's pullups:
-        locDocPullCount = locDocPullCount! + int.parse(pullUpControllerCount);
       }
 
       //printing modified local variables
@@ -328,6 +335,7 @@ Future submitFormOnSave() async {
       print('locDocBestMonth: $locDocBestMonth');
       print('locDocIsBlocked: $locDocIsBlocked');
       print('locDocYearMap: $locDocYearMap');
+      print('locpushMasterMap: $locpushMasterMap');
 
       //reuploading the data to firestore:
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -369,21 +377,3 @@ int calculateScore({pushupController, pullupController}) {
   int pullupCount = int.parse((pullupController != '' && pullupController != null) ? pullupController : '0');
   return score = (pushupCount + 3.0 * pullupCount).toInt();
 }
-
-
-// The pushMasterMap and the pullMasterMap will store the data in key value pairs in the following format.
-
-// // Using DateTime objects as keys in the pushMasterMap
-// Map<DateTime, int> pushMasterMap = {
-//   DateTime(2023, 7, 1): 1234,
-//   DateTime(2023, 7, 2): 5678,
-//   // ...
-// };
-
-// // Using DateTime objects as keys in the pullMasterMap
-// Map<DateTime, int> pullMasterMap = {
-//   DateTime(2023, 7, 1): 4321,
-//   DateTime(2023, 7, 2): 8765,
-//   // ...
-// };
-//an example masterMap are uploaded so that i can check if i could store static Map values of the above formate on the firstore document.
