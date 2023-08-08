@@ -378,6 +378,9 @@ Future submitFormOnSave() async {
         'pullMasterMap': locpullMasterMap,
       });
     }
+
+    calculatePushWeekGraph();
+    calculatePullWeekGraphPull();
   } catch (e) {
     print('Error checking/uploading data to Firestore: $e');
   }
@@ -391,4 +394,52 @@ int calculateScore({pushupController, pullupController}) {
   int pushupCount = int.parse((pushupController != '' && pushupController != null) ? pushupController : '0');
   int pullupCount = int.parse((pullupController != '' && pullupController != null) ? pullupController : '0');
   return score = (pushupCount + 3.0 * pullupCount).toInt();
+}
+
+//the following function will intialize a list that will contain the last 7 days record of pushMasterMap.
+
+List<int> weekGraphPushData = [];
+
+void calculatePushWeekGraph() {
+  int currentYear = DateTime.now().year;
+  int currentMonth = DateTime.now().month;
+
+  int todayDay = DateTime.now().day;
+  for (int i = 0; i < 7; i++) {
+    int targetDay = todayDay - i;
+    int targetDate = currentYear * 10000 + currentMonth * 100 + targetDay;
+
+    if (locpushMasterMap.containsKey(targetDate.toString())) {
+      weekGraphPushData.add(locpushMasterMap[targetDate.toString()]!);
+    } else {
+      weekGraphPushData.add(0);
+    }
+  }
+
+  weekGraphPushData = weekGraphPushData.reversed.toList(); // Reverse the list to match the order
+  print(' PRINTING WEEK PUSH $weekGraphPushData');
+}
+
+//the following function will intialize a list that will contain the last 7 days record of pullMasterMap.
+
+List<int> weekGraphPullData = [];
+
+void calculatePullWeekGraphPull() {
+  int currentYear = DateTime.now().year;
+  int currentMonth = DateTime.now().month;
+
+  int todayDay = DateTime.now().day;
+  for (int i = 0; i < 7; i++) {
+    int targetDay = todayDay - i;
+    int targetDate = currentYear * 10000 + currentMonth * 100 + targetDay;
+
+    if (locpullMasterMap.containsKey(targetDate.toString())) {
+      weekGraphPullData.add(locpullMasterMap[targetDate.toString()]!);
+    } else {
+      weekGraphPullData.add(0);
+    }
+  }
+
+  weekGraphPullData = weekGraphPullData.reversed.toList(); // Reverse the list to match the order
+  print(' PRINTING WEEK PULL $weekGraphPullData');
 }
