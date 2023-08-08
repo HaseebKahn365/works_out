@@ -67,7 +67,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     titleWidget = TextStyleExample(
       name: "Registration",
-      style: TextStyle(fontSize: 35),
+      style: TextStyle(fontSize: 25),
     ); // Add this line
   }
 
@@ -85,7 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       textTheme = themeData.textTheme;
       titleWidget = TextStyleExample(
         name: "Registration",
-        style: TextStyle(fontSize: 35),
+        style: TextStyle(fontSize: 25),
       ); // Add this line
     });
   }
@@ -120,7 +120,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
 
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 30.0),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 30.0,
+                ),
                 child: TextField(
                   controller: _email,
                   focusNode: _field1Focus,
@@ -129,8 +131,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     FocusScope.of(context).requestFocus(_field2Focus);
                   },
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(15),
                     border: OutlineInputBorder(),
-                    hintText: 'Create Worksout email',
+                    hintText: 'Create new email',
                     prefixIcon: Icon(
                       FluentIcons.mail_12_filled,
                       size: 30,
@@ -150,6 +153,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     FocusScope.of(context).requestFocus(_field3Focus);
                   },
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(15),
                     border: OutlineInputBorder(),
                     hintText: 'Password',
                     prefixIcon: Icon(
@@ -170,6 +174,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     _field3Focus.unfocus();
                   },
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(15),
                     border: OutlineInputBorder(),
                     hintText: 'Confirm Password',
                     prefixIcon: Icon(
@@ -202,7 +207,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 },
                 child: Text(
                   'Register',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 1.2),
                 ),
               ),
               Row(

@@ -62,7 +62,10 @@ class _StatsScreenState extends State<StatsScreen> {
                 children: [
                   Expanded(
                     child: Column(
-                      children: [schemeLabel("Light Theme"), schemeView(lightTheme)],
+                      children: [
+                        schemeLabel("Light Theme"),
+                        schemeView(lightTheme),
+                      ],
                     ),
                   ),
                 ],
@@ -89,21 +92,24 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        const SizedBox(
+          height: 15,
+        ),
+        SizedBox(
           height: 300,
           child: Card(
             color: Theme.of(context).colorScheme.onInverseSurface,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(12.0),
             ),
             elevation: 0,
-            margin: EdgeInsets.all(7),
+            margin: const EdgeInsets.all(5.7),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: CustomPaint(
                 foregroundPainter: RadialPainter(
-                    bgColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.65),
+                    bgColor: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.65),
                     lineColor: getColor(context, 0.7),
                     percent: (locDocDayRec != null && locDocDayRec != 0) ? locDocDayRec! / locDocBestDay! : 0,
                     width: 12.0),
@@ -131,26 +137,26 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
             ),
           ),
         ),
-        SizedBox(
-          height: 20,
+        const SizedBox(
+          height: 30,
         ),
 
         //I have left the below group to show the text data that will come from firestore.
         ColorGroup(
           children: [
-            ColorChip(label: 'Your Ranking                Coming soon!', color: widget.colorScheme.primary),
             ColorChip(
-                label: 'Today\'s Score                            $locDocDayRec',
-                color: widget.colorScheme.primaryContainer),
+              label: 'Your Ranking',
+              number: 'Coming soon!',
+              color: widget.colorScheme.primary,
+            ),
             ColorChip(
-                label: 'Week\'s Score                             $locDocWeekRec',
-                color: widget.colorScheme.primaryContainer),
+                label: 'Today\'s Score', number: locDocDayRec.toString(), color: widget.colorScheme.primaryContainer),
             ColorChip(
-                label: 'Month\'s Score                           $locDocMonthRec',
-                color: widget.colorScheme.primaryContainer),
+                label: 'Week\'s Score', number: locDocWeekRec.toString(), color: widget.colorScheme.primaryContainer),
             ColorChip(
-                label: 'Year\'s Score                               $locDocYearRec',
-                color: widget.colorScheme.primaryContainer),
+                label: 'Month\'s Score', number: locDocMonthRec.toString(), color: widget.colorScheme.primaryContainer),
+            ColorChip(
+                label: 'Year\'s Score', number: locDocYearRec.toString(), color: widget.colorScheme.primaryContainer),
           ],
         ),
       ],
@@ -179,6 +185,7 @@ class ColorChip extends StatelessWidget {
   const ColorChip({
     super.key,
     required this.color,
+    required this.number,
     required this.label,
     this.onColor,
   });
@@ -186,6 +193,7 @@ class ColorChip extends StatelessWidget {
   final Color color;
   final Color? onColor;
   final String label;
+  final String number;
 
   static Color contrastColor(Color color) {
     final brightness = ThemeData.estimateBrightnessForColor(color);
@@ -202,12 +210,30 @@ class ColorChip extends StatelessWidget {
     final Color labelColor = onColor ?? contrastColor(color);
 
     return Container(
+      width: 320,
       color: color,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(17),
         child: Row(
           children: [
-            Expanded(child: Center(child: Text(label, style: TextStyle(color: labelColor)))),
+            Expanded(
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                  child: Text(
+                    label,
+                    style: TextStyle(color: labelColor),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                  child: Text(
+                    number,
+                    style: TextStyle(color: labelColor),
+                  ),
+                ),
+              ]),
+            ),
           ],
         ),
       ),

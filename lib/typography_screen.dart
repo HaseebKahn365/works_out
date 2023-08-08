@@ -35,8 +35,8 @@ class _TypographyScreenState extends State<TypographyScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(dataList[index]['title']!, style: textTheme.headlineLarge),
-                    Text(dataList[index]['subtitle']!, style: textTheme.titleLarge),
+                    Text(dataList[index]['title']!, style: textTheme.headlineSmall),
+                    Text(dataList[index]['subtitle']!, style: textTheme.titleMedium),
                   ],
                 ),
               ),

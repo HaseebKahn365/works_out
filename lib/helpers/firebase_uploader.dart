@@ -4,8 +4,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:works_out/component_screen.dart';
-
 import '../main.dart';
 
 //local varables to
@@ -29,6 +29,14 @@ int? locDocBestWeek;
 int? locDocBestMonth;
 bool? locDocIsBlocked;
 Map<String, int> locDocYearMap = {};
+
+//int keys cannot be uploaded to a firstore doucment. shit. now converting it to strings
+Map<String, int> locpushMasterMap =
+    {}; //leaving it null should be a problem becuase the data is intialized by initState
+
+//THis map will be used to locally store or modify the map of daily pullups from of Map similar to the locPushMasterMap
+
+Map<String, int> locpullMasterMap = {};
 
 Future submitFormOnSave() async {
   final uid = user!.uid;
@@ -61,6 +69,8 @@ Future submitFormOnSave() async {
     int bestMonth;
     bool isBlocked;
     Map<String, int> docYearMap = {};
+    Map<String, int> docpushMasterMap = {};
+    Map<String, int> docpullMasterMap = {};
 
     late String userImageUrl;
     if (!docSnapshot.exists) {
@@ -90,6 +100,16 @@ Future submitFormOnSave() async {
       isBlocked = false;
       docYearMap = {'$docYear': 0};
 
+      //intializing today in docpushMasterMap as 0
+
+      //updating the locpushMasterMap
+      DateTime now = DateTime.now();
+
+// Format the date as an 8-digit integer (YYYYMMDD)
+      String key = DateFormat('yyyyMMdd').format(now);
+
+      docpushMasterMap = {key: 0};
+      docpullMasterMap = {key: 0};
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'userImage': userImage,
         'userName': userName,
@@ -114,6 +134,8 @@ Future submitFormOnSave() async {
         'isBlocked': isBlocked,
         'docYearMap': docYearMap,
         'createdAt': Timestamp.now(),
+        'pushMasterMap': docpushMasterMap,
+        'pullMasterMap': docpullMasterMap,
       });
 
       print('Data uploaded successfully to Firestore!');
@@ -151,6 +173,8 @@ Future submitFormOnSave() async {
       bestMonth = data['bestMonth'] ?? 0;
       isBlocked = data['isBlocked'] ?? false;
       docYearMap = Map<String, int>.from(data['docYearMap'] ?? {});
+      docpushMasterMap = Map<String, int>.from(data['pushMasterMap'] ?? {});
+      docpullMasterMap = Map<String, int>.from(data['pullMasterMap'] ?? {});
       // Printing the above variables to see if they are properly downloaded
       // Download data and assign it to the variables
       // Use null-aware operators to handle nullable fields
@@ -174,8 +198,10 @@ Future submitFormOnSave() async {
       print('bestMonth: $bestMonth');
       print('isBlocked: $isBlocked');
       print('docYearMap: $docYearMap');
+      print('docpushMasterMap: $docpushMasterMap');
+      print('docpullMasterMap: $docpullMasterMap');
 
-      // loading the downloading data onto the local variables for use.
+      // downloading and loading  data onto the local variables for use.
       locDocIsHaseeb = isHaseeb;
       locDocUserImage = userImage;
       locDocUserName = userName;
@@ -196,54 +222,47 @@ Future submitFormOnSave() async {
       locDocBestMonth = bestMonth;
       locDocIsBlocked = isBlocked;
       locDocYearMap = docYearMap;
+      locpushMasterMap = docpushMasterMap;
+      locpullMasterMap = docpullMasterMap;
+
+      print('************ locpushMasterMap: ${locpushMasterMap}\n\n\n\n');
+      print('************ locpullMasterMap: ${locpullMasterMap}\n\n\n\n');
 
 //calculating score before modifying the local variables
 
       // Updating the document with the newly calculated score data
+      final calculatedScore =
+          calculateScore(pushupController: pushUpControllerCount, pullupController: pullUpControllerCount);
 
       //updating the year map before the year changes
       if (locDocYear == DateTime.now().year) {
         locDocYearMap[DateTime.now().year.toString()] = locDocYearMap[DateTime.now().year.toString()]! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // modifying the value of the current year key
+            calculatedScore; // modifying the value of the current year key
       } else {
-        locDocYearMap[DateTime.now().year.toString()] = calculateScore(
-            pushupController: pushUpControllerCount,
-            pullupController:
-                pullUpControllerCount); // it will add previous year key and value to the map after the year changes
+        locDocYearMap[DateTime.now().year.toString()] =
+            calculatedScore; // it will add previous year key and value to the map after the year changes
         locDocYearMap[DateTime.now().year.toString()] = locDocYearMap[DateTime.now().year.toString()]! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // modifying the value of the current year key
+            calculatedScore; // modifying the value of the current year key
       }
 
       //updating the yearRecord before the month changes
       if (locDocYear == DateTime.now().year) {
-        locDocYearRec = locDocYearRec! +
-            calculateScore(pushupController: pushUpControllerCount, pullupController: pullUpControllerCount);
+        locDocYearRec = locDocYearRec! + calculatedScore;
       } else {
         locDocYear = DateTime.now().year;
         locDocYearRec = 0; // clears the week if week changes
-        locDocYearRec = locDocYearRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new year
+        locDocYearRec = locDocYearRec! + calculatedScore; // adds the score to the new year
       }
 
       //updating the monthRecord before the week changes
       if (locDocMonth == DateTime.now().month) {
-        locDocMonthRec = locDocMonthRec! +
-            calculateScore(pushupController: pushUpControllerCount, pullupController: pullUpControllerCount);
+        locDocMonthRec = locDocMonthRec! + calculatedScore;
         //best week record
         locDocBestMonth = (locDocMonthRec! >= locDocBestMonth!) ? locDocMonthRec : locDocBestMonth;
       } else {
         locDocMonth = DateTime.now().month;
         locDocMonthRec = 0; // clears the week if week changes
-        locDocMonthRec = locDocMonthRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new month
+        locDocMonthRec = locDocMonthRec! + calculatedScore; // adds the score to the new month
 
         //best month record
         locDocBestMonth = (locDocMonthRec! >= locDocBestMonth!) ? locDocMonthRec : locDocBestMonth;
@@ -251,45 +270,61 @@ Future submitFormOnSave() async {
 
       //updating the weekRecord before todayRecord
       if (locDocWeek == (DateTime.now().day ~/ 7)) {
-        locDocWeekRec = locDocWeekRec! +
-            calculateScore(pushupController: pushUpControllerCount, pullupController: pullUpControllerCount);
+        locDocWeekRec = locDocWeekRec! + calculatedScore;
         //best week record
         locDocBestWeek = (locDocWeekRec! >= locDocBestWeek!) ? locDocWeekRec : locDocBestWeek;
       } else {
         locDocWeek = (DateTime.now().day ~/ 7);
         locDocWeekRec = 0; // clears the week if week changes
-        locDocWeekRec = locDocWeekRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new week
+        locDocWeekRec = locDocWeekRec! + calculatedScore; // adds the score to the new week
         //best week record
         locDocBestWeek = (locDocWeekRec! >= locDocBestWeek!) ? locDocWeekRec : locDocBestWeek;
       }
 
       //this will be done in the last to update today's record on same day or if day changes
       if (locDocDayToday == DateTime.now().day) {
-        locDocDayRec = locDocDayRec! +
-            calculateScore(pushupController: pushUpControllerCount, pullupController: pullUpControllerCount);
+        locDocDayRec = locDocDayRec! + calculatedScore;
         //best day record
         locDocBestDay = (locDocDayRec! >= locDocBestDay!) ? locDocDayRec : locDocBestDay;
         //calculate today's pushups:
         locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
         //calculate today's pullups:
         locDocPullCount = locDocPullCount! + int.parse(pullUpControllerCount);
+
+        //updating the locpushMasterMap
+        DateTime now = DateTime.now();
+
+// Format the date as an 8-digit integer (YYYYMMDD)
+        String key = DateFormat('yyyyMMdd').format(now);
+
+        print(key); // Output: 20230719 (for July 19, 2023)
+
+        locpushMasterMap[key] = locDocPushCount!;
+        locpullMasterMap[key] = locDocPullCount!;
       } else {
+        //calculate today's pushups:
+        locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
+        //calculate today's pullups:
+        locDocPullCount = locDocPullCount! + int.parse(pullUpControllerCount);
+
+        //updating the locpushMasterMap
+        DateTime now = DateTime.now();
+
+// Format the date as an 8-digit integer (YYYYMMDD)
+        String key = DateFormat('yyyyMMdd').format(now);
+
+        print(key); // Output: 20230719 (for July 19, 2023)
+
+        locpushMasterMap[key] = locDocPushCount!;
+        locpullMasterMap[key] = locDocPullCount!;
+
         locDocDayToday = DateTime.now().day;
         locDocDayRec = 0;
-        locDocDayRec = locDocDayRec! +
-            calculateScore(
-                pushupController: pushUpControllerCount,
-                pullupController: pullUpControllerCount); // adds the score to the new day
+        locDocPushCount = 0;
+        locDocPullCount = 0;
+        locDocDayRec = locDocDayRec! + calculatedScore; // adds the score to the new day
         //best day record
         locDocBestDay = (locDocDayRec! >= locDocBestDay!) ? locDocDayRec : locDocBestDay;
-
-        //calculate today's pushups:
-        locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
-        //calculate today's pullups:
-        locDocPullCount = locDocPullCount! + int.parse(pullUpControllerCount);
       }
 
       //printing modified local variables
@@ -313,6 +348,8 @@ Future submitFormOnSave() async {
       print('locDocBestMonth: $locDocBestMonth');
       print('locDocIsBlocked: $locDocIsBlocked');
       print('locDocYearMap: $locDocYearMap');
+      print('locpushMasterMap: $locpushMasterMap');
+      print('locpullMasterMap: $locpullMasterMap');
 
       //reuploading the data to firestore:
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -337,6 +374,8 @@ Future submitFormOnSave() async {
         'bestMonth': locDocBestMonth,
         'isBlocked': locDocIsBlocked,
         'docYearMap': locDocYearMap,
+        'pushMasterMap': locpushMasterMap,
+        'pullMasterMap': locpullMasterMap,
       });
     }
   } catch (e) {

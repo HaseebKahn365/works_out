@@ -45,6 +45,8 @@ class ComponentScreen extends StatefulWidget {
 
 class _ComponentScreenState extends State<ComponentScreen> {
   final FocusNode _textFieldFocusNode1 = FocusNode();
+  // ignore: unused_field
+  late Future<void> _initDataFuture;
 
   final FocusNode _textFieldFocusNode2 = FocusNode();
   bool onlineStatus = false;
@@ -52,6 +54,26 @@ class _ComponentScreenState extends State<ComponentScreen> {
   final TextEditingController pushUpController = TextEditingController();
   final TextEditingController pullUpController = TextEditingController();
   final TextEditingController _textFieldControllerForNewWorkout = TextEditingController();
+
+  @override
+  void initState() {
+    _initDataFuture = _initData();
+    super.initState();
+  }
+
+  Future<void> _initData() async {
+    // Assuming submitFormOnSave() returns a Future that fetches data from Firestore
+    // For demonstration purposes, let's assume it's fetching push-up and pull-up data
+    await Future.wait([
+      submitFormOnSave(),
+      // Any other data fetching from Firestore can be added here
+    ]);
+    setState(() {
+      // Update the UI state after all data fetching is complete
+      locDocPushCount;
+      locDocPullCount;
+    });
+  }
 
   @override
   void dispose() {
@@ -70,7 +92,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Align(
-          alignment: Alignment.topRight,
+          alignment: Alignment.topCenter,
           child: SizedBox(
             width: _maxWidthConstraint,
             child: ListView(
@@ -78,7 +100,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
               children: [
                 TextStyleExample(
                   name: welcomeMessage,
-                  style: textTheme.displayMedium!,
+                  style: textTheme.displaySmall!,
                 ),
 
                 widget.showNavBottomBar
@@ -104,7 +126,10 @@ class _ComponentScreenState extends State<ComponentScreen> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text('New Workout'),
+                          title: Text(
+                            'New Workout',
+                            style: TextStyle(fontSize: 20),
+                          ),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -125,23 +150,26 @@ class _ComponentScreenState extends State<ComponentScreen> {
                               SizedBox(height: 16),
 
                               // Text field
-                              TextField(
-                                controller: _textFieldControllerForNewWorkout,
-                                maxLength: 20, // Limit the length to 20 characters
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(
-                                    FluentIcons.add_12_regular,
-                                    color: Theme.of(context).dividerColor,
-                                    size: 25,
+                              Container(
+                                height: 75,
+                                child: TextField(
+                                  controller: _textFieldControllerForNewWorkout,
+                                  maxLength: 20, // Limit the length to 20 characters
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(
+                                      FluentIcons.add_12_regular,
+                                      color: Theme.of(context).dividerColor,
+                                      size: 25,
+                                    ),
+                                    hintText: 'Workout Title',
+                                    border: OutlineInputBorder(),
                                   ),
-                                  hintText: 'Workout Title',
-                                  border: OutlineInputBorder(),
+                                  buildCounter: (BuildContext context,
+                                      {int? currentLength, int? maxLength, bool? isFocused}) {
+                                    currentLength ??= 0;
+                                    return Text('${(20 - currentLength)} left', style: TextStyle(fontSize: 11));
+                                  },
                                 ),
-                                buildCounter: (BuildContext context,
-                                    {int? currentLength, int? maxLength, bool? isFocused}) {
-                                  currentLength ??= 0;
-                                  return Text('${(20 - currentLength)} left', style: TextStyle(fontSize: 11));
-                                },
                               ),
                             ],
                           ),
@@ -176,48 +204,53 @@ class _ComponentScreenState extends State<ComponentScreen> {
                 // Text field
                 Padding(
                   padding: _symmetricPad,
-                  child: TextField(
-                    controller: pushUpController,
-                    focusNode: _textFieldFocusNode1,
-                    maxLength: 3,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        _textFieldFocusNode1.hasFocus ? FluentIcons.edit_20_filled : FluentIcons.edit_20_regular,
-                        color: (int.tryParse(pushUpController.text) == 0) ? Colors.red : Theme.of(context).dividerColor,
-                        size: 25,
-                      ),
-                      hintText: 'PushUps',
-                      helperText: 'Today\'s count : $locDocPushCount',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).dividerColor,
+                  child: Container(
+                    child: TextField(
+                      controller: pushUpController,
+                      focusNode: _textFieldFocusNode1,
+                      maxLength: 3,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(17),
+                        prefixIcon: Icon(
+                          _textFieldFocusNode1.hasFocus ? FluentIcons.edit_20_filled : FluentIcons.edit_20_regular,
+                          color:
+                              (int.tryParse(pushUpController.text) == 0) ? Colors.red : Theme.of(context).dividerColor,
+                          size: 25,
+                        ),
+                        hintText: 'PushUps',
+                        helperText: 'Today\'s count : ${(locDocPushCount) ?? 'loading...'}',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                          ),
                         ),
                       ),
+                      buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
+                        currentLength ??= 0;
+                        return Text('Topper Gap: Pending', style: TextStyle(fontSize: 11));
+                      },
+                      onChanged: (String value) {
+                        setState(() {
+                          // Update the state when the text field value changes
+                          if (pushUpController.text != '') {
+                            pushUpControllerCount = pushUpController.text;
+                          } else {
+                            pushUpControllerCount = '0'; // Reset to '0' if the text is empty
+                          }
+                        });
+                      },
+                      onEditingComplete: () {
+                        setState(() {
+                          pushUpControllerCount =
+                              pushUpController.text; // Update the count variable on editing complete
+                        });
+                        FocusScope.of(context).requestFocus(_textFieldFocusNode2);
+                      },
                     ),
-                    buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
-                      currentLength ??= 0;
-                      return Text('Topper Gap: Pending', style: TextStyle(fontSize: 11));
-                    },
-                    onChanged: (String value) {
-                      setState(() {
-                        // Update the state when the text field value changes
-                        if (pushUpController.text != '') {
-                          pushUpControllerCount = pushUpController.text;
-                        } else {
-                          pushUpControllerCount = '0'; // Reset to '0' if the text is empty
-                        }
-                      });
-                    },
-                    onEditingComplete: () {
-                      setState(() {
-                        pushUpControllerCount = pushUpController.text; // Update the count variable on editing complete
-                      });
-                      FocusScope.of(context).requestFocus(_textFieldFocusNode2);
-                    },
                   ),
                 ),
                 SizedBox(
@@ -226,48 +259,53 @@ class _ComponentScreenState extends State<ComponentScreen> {
                 // Text field for pullups
                 Padding(
                   padding: _symmetricPad,
-                  child: TextField(
-                    controller: pullUpController,
-                    focusNode: _textFieldFocusNode2,
-                    maxLength: 3,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        _textFieldFocusNode2.hasFocus ? FluentIcons.edit_20_filled : FluentIcons.edit_20_regular,
-                        color: (int.tryParse(pullUpController.text) == 0) ? Colors.red : Theme.of(context).dividerColor,
-                        size: 25,
-                      ),
-                      hintText: 'PullUps',
-                      helperText: 'Today\'s count : $locDocPullCount',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).dividerColor,
+                  child: Container(
+                    child: TextField(
+                      controller: pullUpController,
+                      focusNode: _textFieldFocusNode2,
+                      maxLength: 3,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(17),
+                        prefixIcon: Icon(
+                          _textFieldFocusNode2.hasFocus ? FluentIcons.edit_20_filled : FluentIcons.edit_20_regular,
+                          color:
+                              (int.tryParse(pullUpController.text) == 0) ? Colors.red : Theme.of(context).dividerColor,
+                          size: 25,
+                        ),
+                        hintText: 'PullUps',
+                        helperText: 'Today\'s count : ${(locDocPullCount) ?? 'loading...'}',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                          ),
                         ),
                       ),
+                      buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
+                        currentLength ??= 0;
+                        return Text('Topper Gap: Pending', style: TextStyle(fontSize: 11));
+                      }, //This will indicate the difference between the top scorer and the current user after data from the database is fetched
+                      onChanged: (String value) {
+                        setState(() {
+                          // Update the state when the text field value changes
+                          if (pullUpController.text != '') {
+                            pullUpControllerCount = pullUpController.text;
+                          } else {
+                            pullUpControllerCount = '0'; // Reset to '0' if the text is empty
+                          }
+                        });
+                      },
+                      onEditingComplete: () {
+                        setState(() {
+                          pullUpControllerCount =
+                              pullUpController.text; // Update the count variable on editing complete
+                        });
+                        _textFieldFocusNode2.unfocus(); //pullups field unfocus .unfocus();
+                      },
                     ),
-                    buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
-                      currentLength ??= 0;
-                      return Text('Topper Gap: Pending', style: TextStyle(fontSize: 11));
-                    }, //This will indicate the difference between the top scorer and the current user after data from the database is fetched
-                    onChanged: (String value) {
-                      setState(() {
-                        // Update the state when the text field value changes
-                        if (pullUpController.text != '') {
-                          pullUpControllerCount = pullUpController.text;
-                        } else {
-                          pullUpControllerCount = '0'; // Reset to '0' if the text is empty
-                        }
-                      });
-                    },
-                    onEditingComplete: () {
-                      setState(() {
-                        pullUpControllerCount = pullUpController.text; // Update the count variable on editing complete
-                      });
-                      _textFieldFocusNode2.unfocus(); //pullups field unfocus .unfocus();
-                    },
                   ),
                 ),
 
@@ -383,26 +421,6 @@ const _colDivider = SizedBox(height: 10);
 const _symmetricPad = EdgeInsets.symmetric(horizontal: 5);
 const double _cardWidth = 115;
 const double _maxWidthConstraint = 400;
-
-void Function()? handlePressed(BuildContext context, bool isDisabled, String buttonName) {
-  return isDisabled
-      ? null
-      : () {
-          final snackBar = SnackBar(
-            content: Text(
-              'Yay! $buttonName is clicked!',
-              style: TextStyle(color: Theme.of(context).colorScheme.surface),
-            ),
-            action: SnackBarAction(
-              textColor: Theme.of(context).colorScheme.surface,
-              label: 'Close',
-              onPressed: () {},
-            ),
-          );
-
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        };
-}
 
 const List<NavigationDestination> appBarDestinations = [
   NavigationDestination(

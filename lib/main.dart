@@ -131,6 +131,29 @@ class _WorksOutState extends State<WorksOut> {
             if (isGoogleLoggedOut) {
               print('Google user logged out');
               userImageFile = null;
+
+              //Making all the local variables null before the user is logged out:
+              locDocIsHaseeb = null;
+              locDocUserImage = null;
+              locDocUserName = 'Anonymous';
+              locDocEmail = null;
+              locDocPassword = null;
+              locDocPushCount = 0;
+              locDocPullCount = 0;
+              locDocDayToday = 0;
+              locDocDayRec = 0;
+              locDocWeek = 0;
+              locDocWeekRec = 0;
+              locDocMonth = 0;
+              locDocMonthRec = 0;
+              locDocYear = 0;
+              locDocYearRec = 0;
+              locDocBestDay = 0;
+              locDocBestWeek = 0;
+              locDocBestMonth = 0;
+              locDocIsBlocked = false;
+              locDocYearMap = {};
+
               if (mounted) {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -144,6 +167,28 @@ class _WorksOutState extends State<WorksOut> {
 
             signOut();
             userImageFile = null;
+
+            //making all the local variables null before the user signsout:
+            locDocIsHaseeb = null;
+            locDocUserImage = null;
+            locDocUserName = 'Anonymous';
+            locDocEmail = null;
+            locDocPassword = null;
+            locDocPushCount = 0;
+            locDocPullCount = 0;
+            locDocDayToday = 0;
+            locDocDayRec = 0;
+            locDocWeek = 0;
+            locDocWeekRec = 0;
+            locDocMonth = 0;
+            locDocMonthRec = 0;
+            locDocYear = 0;
+            locDocYearRec = 0;
+            locDocBestDay = 0;
+            locDocBestWeek = 0;
+            locDocBestMonth = 0;
+            locDocIsBlocked = false;
+            locDocYearMap = {};
             //go to login page:
             if (mounted) {
               Navigator.pushAndRemoveUntil(
@@ -162,7 +207,6 @@ class _WorksOutState extends State<WorksOut> {
   initState() {
     super.initState();
     user = Auth().currentUser;
-    submitFormOnSave().then((value) {});
 
     themeData = updateThemes(colorSelected, useMaterial3, useLightMode);
   }
@@ -200,7 +244,10 @@ class _WorksOutState extends State<WorksOut> {
             File? currentImageFile = imageFile; // Create a local variable to store the current image file
 
             return AlertDialog(
-              title: Text('Settings'),
+              title: Text(
+                'Settings',
+                style: TextStyle(fontSize: 20),
+              ),
               content: SingleChildScrollView(
                 reverse: true,
                 child: StatefulBuilder(
@@ -298,6 +345,7 @@ class _WorksOutState extends State<WorksOut> {
                           maxLength: 20, // Limit the length to 20 characters
                           controller: changeNameController,
                           decoration: InputDecoration(
+                            contentPadding: EdgeInsets.all(15),
                             prefixIcon: Icon(
                               FluentIcons.edit_20_filled,
                               color: themeData.hintColor,
@@ -386,13 +434,25 @@ class _WorksOutState extends State<WorksOut> {
 
   Text? appBarText() {
     if (openedScreen == 0) {
-      return const Text('Update / Add');
+      return const Text(
+        'Update / Add',
+        style: TextStyle(fontSize: 20),
+      );
     } else if (openedScreen == 1) {
-      return const Text('Statistics');
+      return const Text(
+        'Statistics',
+        style: TextStyle(fontSize: 20),
+      );
     } else if (openedScreen == 2) {
-      return const Text('Top Scorers');
+      return const Text(
+        'Top Scorers',
+        style: TextStyle(fontSize: 20),
+      );
     } else {
-      return const Text('Update / Add');
+      return const Text(
+        'Update / Add',
+        style: TextStyle(fontSize: 20),
+      );
     }
   }
 
