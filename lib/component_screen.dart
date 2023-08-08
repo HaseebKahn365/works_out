@@ -45,6 +45,7 @@ class ComponentScreen extends StatefulWidget {
 
 class _ComponentScreenState extends State<ComponentScreen> {
   final FocusNode _textFieldFocusNode1 = FocusNode();
+  // ignore: unused_field
   late Future<void> _initDataFuture;
 
   final FocusNode _textFieldFocusNode2 = FocusNode();
@@ -72,8 +73,6 @@ class _ComponentScreenState extends State<ComponentScreen> {
       locDocPushCount;
       locDocPullCount;
     });
-
-    // Once all data fetching is complete, you can update the UI state or perform other actions
   }
 
   @override

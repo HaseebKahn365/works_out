@@ -29,6 +29,21 @@ int? locDocBestWeek;
 int? locDocBestMonth;
 bool? locDocIsBlocked;
 Map<String, int> locDocYearMap = {};
+//int keys cannot be uploaded to a firstore doucment. shit. now converting it to strings
+Map<String, int> locpushMasterMap = {
+  '20230824': 37,
+  '20230825': 38,
+  '20230826': 39,
+  '20230827': 40,
+  '20230828': 41,
+  '20230829': 42,
+  '20230830': 43,
+  '20230831': 44,
+  '20230901': 45,
+  '20230802': 46,
+  '20230804': 48,
+  '20230805': 49,
+};
 
 Future submitFormOnSave() async {
   final uid = user!.uid;
@@ -61,6 +76,7 @@ Future submitFormOnSave() async {
     int bestMonth;
     bool isBlocked;
     Map<String, int> docYearMap = {};
+    Map<String, int> docpushMasterMap = {};
 
     late String userImageUrl;
     if (!docSnapshot.exists) {
@@ -89,7 +105,20 @@ Future submitFormOnSave() async {
       bestMonth = 0;
       isBlocked = false;
       docYearMap = {'$docYear': 0};
-
+      docpushMasterMap = {
+        '20230824': 37,
+        '20230825': 38,
+        '20230826': 39,
+        '20230827': 40,
+        '20230828': 41,
+        '20230829': 42,
+        '20230830': 43,
+        '20230831': 44,
+        '20230901': 45,
+        '20230802': 46,
+        '20230804': 48,
+        '20230805': 49,
+      };
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'userImage': userImage,
         'userName': userName,
@@ -114,6 +143,7 @@ Future submitFormOnSave() async {
         'isBlocked': isBlocked,
         'docYearMap': docYearMap,
         'createdAt': Timestamp.now(),
+        'pushMasterMap': docpushMasterMap,
       });
 
       print('Data uploaded successfully to Firestore!');
@@ -151,6 +181,7 @@ Future submitFormOnSave() async {
       bestMonth = data['bestMonth'] ?? 0;
       isBlocked = data['isBlocked'] ?? false;
       docYearMap = Map<String, int>.from(data['docYearMap'] ?? {});
+      docpushMasterMap = Map<String, int>.from(data['pushMasterMap'] ?? {});
       // Printing the above variables to see if they are properly downloaded
       // Download data and assign it to the variables
       // Use null-aware operators to handle nullable fields
@@ -174,6 +205,7 @@ Future submitFormOnSave() async {
       print('bestMonth: $bestMonth');
       print('isBlocked: $isBlocked');
       print('docYearMap: $docYearMap');
+      print('docpushMasterMap: $docpushMasterMap');
 
       // loading the downloading data onto the local variables for use.
       locDocIsHaseeb = isHaseeb;
@@ -196,6 +228,7 @@ Future submitFormOnSave() async {
       locDocBestMonth = bestMonth;
       locDocIsBlocked = isBlocked;
       locDocYearMap = docYearMap;
+      locpushMasterMap = docpushMasterMap;
 
 //calculating score before modifying the local variables
 
@@ -319,6 +352,7 @@ Future submitFormOnSave() async {
         'bestMonth': locDocBestMonth,
         'isBlocked': locDocIsBlocked,
         'docYearMap': locDocYearMap,
+        'pushMasterMap': locpushMasterMap,
       });
     }
   } catch (e) {
@@ -335,3 +369,21 @@ int calculateScore({pushupController, pullupController}) {
   int pullupCount = int.parse((pullupController != '' && pullupController != null) ? pullupController : '0');
   return score = (pushupCount + 3.0 * pullupCount).toInt();
 }
+
+
+// The pushMasterMap and the pullMasterMap will store the data in key value pairs in the following format.
+
+// // Using DateTime objects as keys in the pushMasterMap
+// Map<DateTime, int> pushMasterMap = {
+//   DateTime(2023, 7, 1): 1234,
+//   DateTime(2023, 7, 2): 5678,
+//   // ...
+// };
+
+// // Using DateTime objects as keys in the pullMasterMap
+// Map<DateTime, int> pullMasterMap = {
+//   DateTime(2023, 7, 1): 4321,
+//   DateTime(2023, 7, 2): 8765,
+//   // ...
+// };
+//an example masterMap are uploaded so that i can check if i could store static Map values of the above formate on the firstore document.
