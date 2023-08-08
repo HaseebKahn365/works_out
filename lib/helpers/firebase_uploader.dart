@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:works_out/component_screen.dart';
-
 import '../main.dart';
 
 //local varables to
@@ -30,9 +29,14 @@ int? locDocBestWeek;
 int? locDocBestMonth;
 bool? locDocIsBlocked;
 Map<String, int> locDocYearMap = {};
+
 //int keys cannot be uploaded to a firstore doucment. shit. now converting it to strings
 Map<String, int> locpushMasterMap =
     {}; //leaving it null should be a problem becuase the data is intialized by initState
+
+//THis map will be used to locally store or modify the map of daily pullups from of Map similar to the locPushMasterMap
+
+Map<String, int> locpullMasterMap = {};
 
 Future submitFormOnSave() async {
   final uid = user!.uid;
@@ -66,6 +70,7 @@ Future submitFormOnSave() async {
     bool isBlocked;
     Map<String, int> docYearMap = {};
     Map<String, int> docpushMasterMap = {};
+    Map<String, int> docpullMasterMap = {};
 
     late String userImageUrl;
     if (!docSnapshot.exists) {
@@ -104,6 +109,7 @@ Future submitFormOnSave() async {
       String key = DateFormat('yyyyMMdd').format(now);
 
       docpushMasterMap = {key: 0};
+      docpullMasterMap = {key: 0};
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'userImage': userImage,
         'userName': userName,
@@ -129,6 +135,7 @@ Future submitFormOnSave() async {
         'docYearMap': docYearMap,
         'createdAt': Timestamp.now(),
         'pushMasterMap': docpushMasterMap,
+        'pullMasterMap': docpullMasterMap,
       });
 
       print('Data uploaded successfully to Firestore!');
@@ -167,6 +174,7 @@ Future submitFormOnSave() async {
       isBlocked = data['isBlocked'] ?? false;
       docYearMap = Map<String, int>.from(data['docYearMap'] ?? {});
       docpushMasterMap = Map<String, int>.from(data['pushMasterMap'] ?? {});
+      docpullMasterMap = Map<String, int>.from(data['pullMasterMap'] ?? {});
       // Printing the above variables to see if they are properly downloaded
       // Download data and assign it to the variables
       // Use null-aware operators to handle nullable fields
@@ -191,6 +199,7 @@ Future submitFormOnSave() async {
       print('isBlocked: $isBlocked');
       print('docYearMap: $docYearMap');
       print('docpushMasterMap: $docpushMasterMap');
+      print('docpullMasterMap: $docpullMasterMap');
 
       // downloading and loading  data onto the local variables for use.
       locDocIsHaseeb = isHaseeb;
@@ -214,8 +223,10 @@ Future submitFormOnSave() async {
       locDocIsBlocked = isBlocked;
       locDocYearMap = docYearMap;
       locpushMasterMap = docpushMasterMap;
+      locpullMasterMap = docpullMasterMap;
 
       print('************ locpushMasterMap: ${locpushMasterMap}\n\n\n\n');
+      print('************ locpullMasterMap: ${locpullMasterMap}\n\n\n\n');
 
 //calculating score before modifying the local variables
 
@@ -289,6 +300,7 @@ Future submitFormOnSave() async {
         print(key); // Output: 20230719 (for July 19, 2023)
 
         locpushMasterMap[key] = locDocPushCount!;
+        locpullMasterMap[key] = locDocPullCount!;
       } else {
         //calculate today's pushups:
         locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
@@ -304,6 +316,7 @@ Future submitFormOnSave() async {
         print(key); // Output: 20230719 (for July 19, 2023)
 
         locpushMasterMap[key] = locDocPushCount!;
+        locpullMasterMap[key] = locDocPullCount!;
 
         locDocDayToday = DateTime.now().day;
         locDocDayRec = 0;
@@ -336,6 +349,7 @@ Future submitFormOnSave() async {
       print('locDocIsBlocked: $locDocIsBlocked');
       print('locDocYearMap: $locDocYearMap');
       print('locpushMasterMap: $locpushMasterMap');
+      print('locpullMasterMap: $locpullMasterMap');
 
       //reuploading the data to firestore:
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -361,6 +375,7 @@ Future submitFormOnSave() async {
         'isBlocked': locDocIsBlocked,
         'docYearMap': locDocYearMap,
         'pushMasterMap': locpushMasterMap,
+        'pullMasterMap': locpullMasterMap,
       });
     }
   } catch (e) {
