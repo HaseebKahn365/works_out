@@ -9,6 +9,9 @@ import 'package:works_out/typography_screen.dart';
 
 import 'helpers/firebase_uploader.dart';
 
+//the following boolean variable is is responsible for update the locDocPushCount and locDocPullCount variables only once when the component screen is loaded
+bool isComponentScreenLoaded = false;
+
 //These are the motivational welcome messages:
 
 List<String> welcomeMessages = [
@@ -45,8 +48,6 @@ class ComponentScreen extends StatefulWidget {
 
 class _ComponentScreenState extends State<ComponentScreen> {
   final FocusNode _textFieldFocusNode1 = FocusNode();
-  // ignore: unused_field
-  late Future<void> _initDataFuture;
 
   final FocusNode _textFieldFocusNode2 = FocusNode();
   bool onlineStatus = false;
@@ -55,9 +56,15 @@ class _ComponentScreenState extends State<ComponentScreen> {
   final TextEditingController pullUpController = TextEditingController();
   final TextEditingController _textFieldControllerForNewWorkout = TextEditingController();
 
+  // ignore: unused_field
+  late Future<void> _initDataFuture;
+
   @override
   void initState() {
-    _initDataFuture = _initData();
+    if (isComponentScreenLoaded == false) {
+      _initDataFuture = _initData();
+      isComponentScreenLoaded = true;
+    }
     super.initState();
   }
 
