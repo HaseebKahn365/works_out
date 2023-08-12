@@ -19,6 +19,7 @@ class CustomWorkout extends StatefulWidget {
   CustomWorkout({super.key, required this.label, required this.countToday, required this.countTotal});
 
   static void encode(List<CustomWorkout> customWorkoutList) {
+    encodedWorkouts = '';
     for (var wo in customWorkoutList) {
       String label = wo.label;
       int countToday = wo.countToday;
@@ -26,10 +27,13 @@ class CustomWorkout extends StatefulWidget {
       String encodedWorkout = '$label,$countToday,$countTotal@'; //@ is used as a separator for workouts
       encodedWorkouts += encodedWorkout;
     }
+    print('encodedWorkouts after encoding: $encodedWorkouts');
   }
 
   static decode(String encodedWorkouts) {
     List<String> encodedWorkoutList = encodedWorkouts.split('@');
+
+    print('encodedWorkouts before decoding: $encodedWorkouts');
     if (encodedWorkouts == '') {
       print('No workouts found');
     } else {
@@ -37,7 +41,8 @@ class CustomWorkout extends StatefulWidget {
         if (encodedWorkout == '') {
           break;
         }
-        List<String> workout = encodedWorkout.split(',');
+        customWorkoutList = []; //make the custom workout list empty before adding new workouts
+        List<String> workout = encodedWorkout.split(',').toList();
 
         String label = workout[0];
         int countToday = int.parse(workout[1]);
@@ -45,7 +50,6 @@ class CustomWorkout extends StatefulWidget {
         CustomWorkout customWorkout = CustomWorkout(label: label, countToday: countToday, countTotal: countTotal);
         customWorkoutList.add(customWorkout);
       }
-      print('customworkout modified');
     }
   }
 
@@ -69,7 +73,15 @@ class CustomWorkout extends StatefulWidget {
 
 class _CustomWorkoutState extends State<CustomWorkout> {
   final TextEditingController _textFieldControllerForNewWorkout = TextEditingController();
+  final FocusNode _textFieldFocusNode = FocusNode();
   int countNow = 0;
+
+  @override
+  void dispose() {
+    _textFieldControllerForNewWorkout.dispose();
+    _textFieldFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +102,12 @@ class _CustomWorkoutState extends State<CustomWorkout> {
                 countNow = int.parse(_textFieldControllerForNewWorkout.text);
                 widget.countToday += countNow;
                 widget.countTotal += countNow;
+
+                // Update the corresponding values in customWorkoutList
+                final customWorkout = customWorkoutList.firstWhere((workout) => workout.label == widget.label);
+                customWorkout.countToday = widget.countToday;
+                customWorkout.countTotal = widget.countTotal;
+
                 CustomWorkout.encode(customWorkoutList);
                 CustomWorkout.saveWorkouts();
               });

@@ -192,18 +192,26 @@ class _ComponentScreenState extends State<ComponentScreen> {
                             ),
                             TextButton(
                               onPressed: () {
-                                //it should also add a text field to the list of custom workouts and use the controller text as the label
-                                //and the countToday and countTotal should be 0
-                                //and then it should add the custom workout to the list of custom workouts
-                                customWorkoutList.add(CustomWorkout(
-                                    label: _textFieldControllerForNewWorkout.text, countToday: 0, countTotal: 0));
-                                //also encode and save the custom workouts to the local storage
+                                // Create a new custom workout and add it to the list
+                                CustomWorkout newWorkout = CustomWorkout(
+                                  label: _textFieldControllerForNewWorkout.text,
+                                  countToday: 0,
+                                  countTotal: 0,
+                                );
+                                customWorkoutList.add(newWorkout);
+
+                                // Encode and save the updated custom workouts to local storage
                                 CustomWorkout.encode(customWorkoutList);
                                 CustomWorkout.saveWorkouts();
-                                Navigator.of(context).pop();
+
+                                // Trigger a UI update
+                                setState(() {});
+
+                                Navigator.of(context).pop(); // Close the alert box
                               },
                               child: Text('Create'),
                             ),
+
                             //create a text button
                           ],
                         ),
