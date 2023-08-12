@@ -201,8 +201,8 @@ class _ComponentScreenState extends State<ComponentScreen> {
                                 customWorkoutList.add(newWorkout);
 
                                 // Encode and save the updated custom workouts to local storage
-                                CustomWorkout.encode(customWorkoutList);
-                                CustomWorkout.saveWorkouts();
+
+                                CustomWorkout.saveAndUpdate();
 
                                 // Trigger a UI update
                                 setState(() {});

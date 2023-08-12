@@ -19,30 +19,29 @@ class CustomWorkout extends StatefulWidget {
   CustomWorkout({super.key, required this.label, required this.countToday, required this.countTotal});
 
   static Future<void> initialize() async {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final File file = File('${directory.path}/workouts.txt');
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/workouts.txt');
     if (file.existsSync()) {
-      String encodedWorkouts = await file.readAsString();
+      final encodedWorkouts = await file.readAsString();
       decode(encodedWorkouts);
     }
   }
 
-  static void encode(List<CustomWorkout> customWorkoutList) {
-    encodedWorkouts = '';
-    for (var wo in customWorkoutList) {
-      String label = wo.label;
-      int countToday = wo.countToday;
-      int countTotal = wo.countTotal;
-      String encodedWorkout = '$label,$countToday,$countTotal@'; //@ is used as a separator for workouts
-      encodedWorkouts += encodedWorkout;
-    }
-    print('encodedWorkouts after encoding: $encodedWorkouts');
+  static void saveAndUpdate() async {
+    encode(customWorkoutList);
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/workouts.txt');
+    await file.writeAsString(encodedWorkouts);
+  }
+
+  static void addWorkout(CustomWorkout workout) {
+    customWorkoutList.add(workout);
+    saveAndUpdate();
   }
 
   static decode(String encodedWorkouts) {
     List<String> encodedWorkoutList = encodedWorkouts.split('@');
 
-    print('encodedWorkouts before decoding: $encodedWorkouts');
     if (encodedWorkouts == '') {
       print('No workouts found');
     } else {
@@ -50,7 +49,6 @@ class CustomWorkout extends StatefulWidget {
         if (encodedWorkout == '') {
           break;
         }
-        customWorkoutList = []; //make the custom workout list empty before adding new workouts
         List<String> workout = encodedWorkout.split(',').toList();
 
         String label = workout[0];
@@ -62,24 +60,16 @@ class CustomWorkout extends StatefulWidget {
     }
   }
 
-  static void saveWorkouts() async {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final File file = File('${directory.path}/workouts.txt');
-    encode(customWorkoutList);
-    await file.writeAsString(encodedWorkouts);
-  }
-
-  static void addWorkout(CustomWorkout workout) {
-    customWorkoutList.add(workout);
-    saveWorkouts();
-  }
-
-  static loadWorkouts() async {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final File file = File('${directory.path}/workouts.txt');
-    encodedWorkouts = await file.readAsString();
-    decode(encodedWorkouts);
-    print('encodedWorkouts: $encodedWorkouts');
+  static void encode(List<CustomWorkout> customWorkoutList) {
+    encodedWorkouts = '';
+    for (var wo in customWorkoutList) {
+      String label = wo.label;
+      int countToday = wo.countToday;
+      int countTotal = wo.countTotal;
+      String encodedWorkout = '$label,$countToday,$countTotal@';
+      encodedWorkouts += encodedWorkout;
+    }
+    print('encodedWorkouts after encoding: $encodedWorkouts');
   }
 
   @override
@@ -122,8 +112,8 @@ class _CustomWorkoutState extends State<CustomWorkout> {
                 customWorkout.countTotal = widget.countTotal;
 
                 // Update the customWorkoutList after modifying the workout
-                CustomWorkout.encode(customWorkoutList);
-                CustomWorkout.saveWorkouts();
+
+                CustomWorkout.saveAndUpdate();
               });
             },
 
