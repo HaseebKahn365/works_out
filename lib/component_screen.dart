@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:works_out/helpers/CustomWorkouts.dart';
 import 'package:works_out/main.dart';
 
 import 'package:works_out/typography_screen.dart';
@@ -61,6 +62,8 @@ class _ComponentScreenState extends State<ComponentScreen> {
 
   @override
   void initState() {
+    //also load the custom workouts from the local storage
+    CustomWorkout.loadWorkouts();
     if (isComponentScreenLoaded == false) {
       _initDataFuture = _initData();
       isComponentScreenLoaded = true;
@@ -183,15 +186,19 @@ class _ComponentScreenState extends State<ComponentScreen> {
                           actions: [
                             TextButton(
                               onPressed: () {
-                                //it should also add a text field to the list of custom workouts
-                                //I am gonna call a function here that will add a text field to the list of custom workouts
-
                                 Navigator.of(context).pop();
                               },
                               child: Text('Cancel'),
                             ),
                             TextButton(
                               onPressed: () {
+                                //it should also add a text field to the list of custom workouts and use the controller text as the label
+                                //and the countToday and countTotal should be 0
+                                //and then it should add the custom workout to the list of custom workouts
+                                customWorkoutList.add(CustomWorkout(
+                                    label: _textFieldControllerForNewWorkout.text, countToday: 0, countTotal: 0));
+                                //also encode and save the custom workouts to the local storage
+                                CustomWorkout.encode(customWorkoutList);
                                 Navigator.of(context).pop();
                               },
                               child: Text('Create'),
@@ -373,6 +380,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
                           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                         ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                         onPressed: () {
+                          //I should also be able to save the modified workouts in the customWorkoutList to the local storage
                           int pushUpValue = int.tryParse(pushUpController.text) ?? 0;
                           int pullUpValue = int.tryParse(pullUpController.text) ?? 0;
 
@@ -403,7 +411,20 @@ class _ComponentScreenState extends State<ComponentScreen> {
                       ),
                     ),
                   ],
-                )
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                //if null then display a text that says 'No custom workouts created yet'
+                //if not null then display the list of custom workouts
+                //the list of custom workouts should be scrollable
+                if (customWorkoutList.length == 0) Text('No custom workouts created yet'),
+                for (var customWorkout in customWorkoutList)
+                  CustomWorkout(
+                    label: customWorkout.label,
+                    countToday: customWorkout.countToday,
+                    countTotal: customWorkout.countTotal,
+                  ),
               ],
             ),
           ),
