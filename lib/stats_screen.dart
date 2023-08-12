@@ -109,7 +109,7 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
               padding: const EdgeInsets.all(20.0),
               child: CustomPaint(
                 foregroundPainter: RadialPainter(
-                    bgColor: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.65),
+                    bgColor: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.15),
                     lineColor: getColor(context, 0.7),
                     percent: (locDocDayRec != null && locDocDayRec != 0) ? locDocDayRec! / locDocBestDay! : 0,
                     width: 12.0),

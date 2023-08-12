@@ -63,7 +63,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
   @override
   void initState() {
     //also load the custom workouts from the local storage
-    CustomWorkout.loadWorkouts();
+
     if (isComponentScreenLoaded == false) {
       _initDataFuture = _initData();
       isComponentScreenLoaded = true;

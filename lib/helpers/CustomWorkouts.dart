@@ -18,6 +18,15 @@ class CustomWorkout extends StatefulWidget {
 
   CustomWorkout({super.key, required this.label, required this.countToday, required this.countTotal});
 
+  static Future<void> initialize() async {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final File file = File('${directory.path}/workouts.txt');
+    if (file.existsSync()) {
+      String encodedWorkouts = await file.readAsString();
+      decode(encodedWorkouts);
+    }
+  }
+
   static void encode(List<CustomWorkout> customWorkoutList) {
     encodedWorkouts = '';
     for (var wo in customWorkoutList) {
@@ -53,10 +62,16 @@ class CustomWorkout extends StatefulWidget {
     }
   }
 
-  static saveWorkouts() async {
+  static void saveWorkouts() async {
     final Directory directory = await getApplicationDocumentsDirectory();
     final File file = File('${directory.path}/workouts.txt');
+    encode(customWorkoutList);
     await file.writeAsString(encodedWorkouts);
+  }
+
+  static void addWorkout(CustomWorkout workout) {
+    customWorkoutList.add(workout);
+    saveWorkouts();
   }
 
   static loadWorkouts() async {
@@ -98,16 +113,15 @@ class _CustomWorkoutState extends State<CustomWorkout> {
             ),
             onSubmitted: (String value) {
               setState(() {
-                //parse the controller to int and set it to the countToday
                 countNow = int.parse(_textFieldControllerForNewWorkout.text);
                 widget.countToday += countNow;
                 widget.countTotal += countNow;
 
-                // Update the corresponding values in customWorkoutList
                 final customWorkout = customWorkoutList.firstWhere((workout) => workout.label == widget.label);
                 customWorkout.countToday = widget.countToday;
                 customWorkout.countTotal = widget.countTotal;
 
+                // Update the customWorkoutList after modifying the workout
                 CustomWorkout.encode(customWorkoutList);
                 CustomWorkout.saveWorkouts();
               });
