@@ -16,7 +16,7 @@ class CustomWorkout extends StatefulWidget {
   int countToday;
   int countTotal;
 
-  CustomWorkout({super.key, this.label = '', this.countToday = 0, this.countTotal = 0});
+  CustomWorkout({super.key, required this.label, required this.countToday, required this.countTotal});
 
   static void encode(List<CustomWorkout> customWorkoutList) {
     for (var wo in customWorkoutList) {
@@ -60,6 +60,7 @@ class CustomWorkout extends StatefulWidget {
     final File file = File('${directory.path}/workouts.txt');
     encodedWorkouts = await file.readAsString();
     decode(encodedWorkouts);
+    print('encodedWorkouts: $encodedWorkouts');
   }
 
   @override
@@ -88,9 +89,10 @@ class _CustomWorkoutState extends State<CustomWorkout> {
                 //parse the controller to int and set it to the countToday
                 countNow = int.parse(_textFieldControllerForNewWorkout.text);
                 widget.countToday += countNow;
-                widget.countTotal += widget.countToday;
+                widget.countTotal += countNow;
+                CustomWorkout.encode(customWorkoutList);
+                CustomWorkout.saveWorkouts();
               });
-              _textFieldControllerForNewWorkout.clear();
             },
 
             keyboardType: TextInputType.number,

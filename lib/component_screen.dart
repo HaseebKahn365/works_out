@@ -199,6 +199,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
                                     label: _textFieldControllerForNewWorkout.text, countToday: 0, countTotal: 0));
                                 //also encode and save the custom workouts to the local storage
                                 CustomWorkout.encode(customWorkoutList);
+                                CustomWorkout.saveWorkouts();
                                 Navigator.of(context).pop();
                               },
                               child: Text('Create'),
@@ -380,6 +381,9 @@ class _ComponentScreenState extends State<ComponentScreen> {
                           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                         ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                         onPressed: () {
+                          //I should be able to save the CustomWorkoutList to the local storage
+
+                          print('tring to save to local storage: save button: ');
                           //I should also be able to save the modified workouts in the customWorkoutList to the local storage
                           int pushUpValue = int.tryParse(pushUpController.text) ?? 0;
                           int pullUpValue = int.tryParse(pullUpController.text) ?? 0;
