@@ -115,6 +115,7 @@ class _CustomWorkoutState extends State<CustomWorkout> {
 
                 CustomWorkout.saveAndUpdate();
               });
+              _textFieldControllerForNewWorkout.clear();
             },
 
             keyboardType: TextInputType.number,
