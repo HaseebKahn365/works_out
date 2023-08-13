@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -105,7 +106,11 @@ class _CustomWorkoutState extends State<CustomWorkout> {
                 border: const OutlineInputBorder(),
                 suffixIcon: GestureDetector(
                   child: IconButton(
-                    icon: const Icon(Icons.delete),
+                    icon: Icon(
+                      //use fluent delete icon
+                      FluentIcons.delete_24_regular,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    ),
                     //it should be on long press and also show a confirmation dialog
                     onPressed: () {},
                   ),

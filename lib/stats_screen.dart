@@ -190,8 +190,50 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
         ),
 
         //customLineChart for weekly push data:
+        //Title of the chart: Weekly Push Data
+        Container(
+          decoration: BoxDecoration(
+            //i only want the top corners fo the rectangle to be rounded
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            color: Theme.of(context).colorScheme.secondaryContainer,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: Text(
+            'Weekly Push Ups',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+              fontSize: 20,
+            ),
+          ),
+        ),
         LineChartWidget(
           listOf7dDays: weekGraphPushData,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        //customLineChart for weekly pull data:
+        //Title of the chart: Weekly Pull Data
+        Container(
+          decoration: BoxDecoration(
+            //i only want the top corners fo the rectangle to be rounded
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            color: Theme.of(context).colorScheme.secondaryContainer,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: Text(
+            'Weekly Pull Ups',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+              fontSize: 20,
+            ),
+          ),
         ),
       ],
     );
