@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
-/*Here is what i want to do. i want the create a custom workout button to create a customWorkout widget. i also want to be able to store these workout in devices' documents
-directory in a file using a String only. i want to be able to retrieve these workouts and display them in a listview. i want to be able to edit the workouts and save them. 
-Take a look at the following functions: */
+/*Eerything works great. Now i need to make sure that today and total are not just the same. it today 
+
+*/
 
 String encodedWorkouts = '';
 List<CustomWorkout> customWorkoutList = [];
@@ -87,6 +87,7 @@ class _CustomWorkoutState extends State<CustomWorkout> {
     _textFieldFocusNode.dispose();
     super.dispose();
   }
+  //THe user should be able to delete the customWorkout as well by long pressing the delete iconButton:
 
   @override
   Widget build(BuildContext context) {
@@ -94,44 +95,87 @@ class _CustomWorkoutState extends State<CustomWorkout> {
       children: [
         Container(
           height: 55,
-          child: TextField(
-            controller: _textFieldControllerForNewWorkout,
-            // Limit the length to 20 characters
-            decoration: InputDecoration(
-              hintText: widget.label,
-              border: const OutlineInputBorder(),
-            ),
-            onSubmitted: (String value) {
-              setState(() {
-                countNow = int.parse(_textFieldControllerForNewWorkout.text);
-                widget.countToday += countNow;
-                widget.countTotal += countNow;
+          width: 320,
+          child: Builder(builder: (BuildContext context) {
+            return TextField(
+              controller: _textFieldControllerForNewWorkout,
+              // Limit the length to 20 characters
+              decoration: InputDecoration(
+                hintText: widget.label,
+                border: const OutlineInputBorder(),
+                suffixIcon: GestureDetector(
+                  child: IconButton(
+                    icon: const Icon(Icons.delete),
+                    //it should be on long press and also show a confirmation dialog
+                    onPressed: () {},
+                  ),
+                  onLongPress: () {
+                    // Show a confirmation dialog
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete this workout?'),
+                          content: const Text('This will delete the workout from the list of custom workouts.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  customWorkoutList.removeWhere((workout) => workout.label == widget.label);
+                                  CustomWorkout.saveAndUpdate();
+                                  widget.label = 'Deleted';
+                                  _textFieldControllerForNewWorkout.clear();
+                                });
+                                Navigator.of(context).pop();
+                                //i need to refresh the page so that the workout is removed from the list of custom workouts using navigator.pushReplacement
+                              },
+                              child: const Text('Delete'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              onSubmitted: (String value) {
+                setState(() {
+                  countNow = int.parse(_textFieldControllerForNewWorkout.text);
+                  widget.countToday += countNow;
+                  widget.countTotal += countNow;
 
-                final customWorkout = customWorkoutList.firstWhere((workout) => workout.label == widget.label);
-                customWorkout.countToday = widget.countToday;
-                customWorkout.countTotal = widget.countTotal;
+                  final customWorkout = customWorkoutList.firstWhere((workout) => workout.label == widget.label);
+                  customWorkout.countToday = widget.countToday;
+                  customWorkout.countTotal = widget.countTotal;
 
-                // Update the customWorkoutList after modifying the workout
+                  // Update the customWorkoutList after modifying the workout
 
-                CustomWorkout.saveAndUpdate();
-              });
-              _textFieldControllerForNewWorkout.clear();
-            },
+                  CustomWorkout.saveAndUpdate();
+                });
+                _textFieldControllerForNewWorkout.clear();
+              },
 
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-          ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+            );
+          }),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('did: ${countNow}'),
-              Text('today: ${widget.countToday}'),
-              Text('total: ${widget.countTotal}'),
+              Text('Now: ${countNow}', style: const TextStyle(fontSize: 12)),
+              Text('Today: ${widget.countToday}', style: const TextStyle(fontSize: 12)),
+              Text('Total: ${widget.countTotal}', style: const TextStyle(fontSize: 12)),
             ],
           ),
         ),

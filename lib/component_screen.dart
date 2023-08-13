@@ -336,37 +336,6 @@ class _ComponentScreenState extends State<ComponentScreen> {
                   height: 20,
                 ),
 
-                /* Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Theme.of(context).focusColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('${1}Created by DialogueBox for Jumps: '),
-                      GestureDetector(
-                        child: Icon(
-                          FluentIcons.add_circle_12_filled,
-                          color: Theme.of(context).hintColor,
-                          size: 30,
-                        ),
-                        onTap: () {
-                          print(
-                              'This button will display another dialogue box with textfield and will do int jumps += input value ');
-                        },
-                      ),
-                    ],
-                  ),
-                )
-                */ //i will implement this later
-                //here will be the save and cancel buttons to save the data to the cloud firestore, and clear the text fields
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

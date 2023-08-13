@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:works_out/Widgets/radial_painter.dart';
 import 'package:works_out/helpers/firebase_uploader.dart';
 
+import 'helpers/CustomWorkouts.dart';
 import 'helpers/colors_helper.dart';
 
 const Widget divider = SizedBox(height: 10);
@@ -157,6 +158,29 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
                 label: 'Month\'s Score', number: locDocMonthRec.toString(), color: widget.colorScheme.primaryContainer),
             ColorChip(
                 label: 'Year\'s Score', number: locDocYearRec.toString(), color: widget.colorScheme.primaryContainer),
+          ],
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        //create another ColorGroup from customWorkoutslist.
+        //This will be a list of all the workouts that the user has created.
+        //The user will be able to tap on the workout and see the total counts for that workout.
+        ColorGroup(
+          children: [
+            ColorChip(
+              label: 'Custom Workouts',
+              number: 'Total Counts',
+              color: widget.colorScheme.primary,
+            ),
+
+            //running a loop through the customWorkoutsList and returning a ColorChip for each workout.
+            for (var item in customWorkoutList)
+              ColorChip(
+                label: item.label,
+                number: item.countTotal.toString(),
+                color: widget.colorScheme.primaryContainer,
+              )
           ],
         ),
       ],
