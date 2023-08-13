@@ -1,7 +1,9 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:works_out/Widgets/radial_painter.dart';
 import 'package:works_out/helpers/firebase_uploader.dart';
 
+import 'Widgets/line_chart.dart';
 import 'helpers/CustomWorkouts.dart';
 import 'helpers/colors_helper.dart';
 
@@ -182,6 +184,14 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
                 color: widget.colorScheme.primaryContainer,
               )
           ],
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+
+        //customLineChart for weekly push data:
+        LineChartWidget(
+          listOf7dDays: weekGraphPushData,
         ),
       ],
     );

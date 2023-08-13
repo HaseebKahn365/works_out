@@ -326,6 +326,7 @@ Future submitFormOnSave() async {
         //best day record
         locDocBestDay = (locDocDayRec! >= locDocBestDay!) ? locDocDayRec : locDocBestDay;
       }
+//this is one of the best demo in the world of the computation process that is out there
 
       //printing modified local variables
       print('locDocIsHaseeb: $locDocIsHaseeb');
