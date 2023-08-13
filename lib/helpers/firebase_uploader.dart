@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:works_out/component_screen.dart';
+import 'package:works_out/helpers/CustomWorkouts.dart';
 import '../main.dart';
 
 //local varables to
@@ -302,6 +303,12 @@ Future submitFormOnSave() async {
         locpushMasterMap[key] = locDocPushCount!;
         locpullMasterMap[key] = locDocPullCount!;
       } else {
+        //Here we will reset each CustomWorkout's todayCount to 0 because the data has changed:
+        for (var customWorkout in customWorkoutList) {
+          customWorkout.countToday = 0;
+        }
+        //saving the changes to file as well
+        CustomWorkout.saveAndUpdate();
         //calculate today's pushups:
         locDocPushCount = locDocPushCount! + int.parse(pushUpControllerCount);
         //calculate today's pullups:

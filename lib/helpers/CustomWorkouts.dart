@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 String encodedWorkouts = '';
 List<CustomWorkout> customWorkoutList = [];
 
+// ignore: must_be_immutable
 class CustomWorkout extends StatefulWidget {
   String label;
   int countToday;
@@ -100,9 +101,13 @@ class _CustomWorkoutState extends State<CustomWorkout> {
           child: Builder(builder: (BuildContext context) {
             return TextField(
               controller: _textFieldControllerForNewWorkout,
+              maxLength: 3,
               // Limit the length to 20 characters
               decoration: InputDecoration(
+                //i don't want the length indicator to appear
+                counterText: '',
                 hintText: widget.label,
+
                 border: const OutlineInputBorder(),
                 suffixIcon: GestureDetector(
                   child: IconButton(

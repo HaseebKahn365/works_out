@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:works_out/Widgets/radial_painter.dart';
 import 'package:works_out/helpers/firebase_uploader.dart';
@@ -234,6 +233,9 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
               fontSize: 20,
             ),
           ),
+        ),
+        LineChartWidget(
+          listOf7dDays: weekGraphPullData,
         ),
       ],
     );

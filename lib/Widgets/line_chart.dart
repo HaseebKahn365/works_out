@@ -15,6 +15,7 @@ class LineChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final maxCountInList = listOf7dDays.reduce((curr, next) => curr > next ? curr : next);
     return Container(
       padding: EdgeInsets.all(15),
       width: 315,
@@ -28,7 +29,7 @@ class LineChartWidget extends StatelessWidget {
           minX: 1,
           maxX: 7,
           minY: 0,
-          maxY: listOf7dDays.reduce((curr, next) => curr > next ? curr : next) + 50,
+          maxY: maxCountInList + 50,
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
               tooltipBgColor: Theme.of(context).colorScheme.onSecondary,
@@ -80,7 +81,7 @@ class LineChartWidget extends StatelessWidget {
                     fontSize: 12,
                   ),
                 ),
-                interval: 100,
+                interval: (maxCountInList > 150) ? 100 : 50,
                 reservedSize: 22,
               ),
             ),
