@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:works_out/Widgets/pie_chart.dart';
 import 'package:works_out/Widgets/radial_painter.dart';
 import 'package:works_out/helpers/firebase_uploader.dart';
 
@@ -237,6 +238,31 @@ class _ColorSchemeViewState extends State<ColorSchemeView> {
         LineChartWidget(
           listOf7dDays: weekGraphPullData,
         ),
+
+        const SizedBox(
+          height: 30,
+        ),
+
+        //showing pie charts for customoWorkoutsList
+        Container(
+          decoration: BoxDecoration(
+            //i only want the top corners fo the rectangle to be rounded
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            color: Theme.of(context).colorScheme.secondaryContainer,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: Text(
+            'Custom Workouts',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+              fontSize: 20,
+            ),
+          ),
+        ),
+        const CustomPieChart(),
       ],
     );
   }
