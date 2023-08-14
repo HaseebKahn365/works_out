@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:works_out/helpers/CustomWorkouts.dart';
 import 'package:works_out/helpers/online_indicator.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -69,7 +70,7 @@ Future<void> signOut() async {
 }
 
 class WorksOut extends StatefulWidget {
-  WorksOut({super.key});
+  WorksOut({Key? key}) : super(key: key);
 
   @override
   State<WorksOut> createState() => _WorksOutState();
@@ -207,10 +208,24 @@ class _WorksOutState extends State<WorksOut> {
 
   @override
   initState() {
+    _loadSettings();
     super.initState();
     user = Auth().currentUser;
+  }
 
-    themeData = updateThemes(colorSelected, useMaterial3, useLightMode);
+  void _loadSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      useLightMode = prefs.getBool('useLightMode') ?? true;
+      colorSelected = prefs.getInt('colorSelected') ?? 0;
+      print('Loaded the sharedPrefrences themeData');
+    });
+  }
+
+  void _saveSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('useLightMode', useLightMode);
+    prefs.setInt('colorSelected', colorSelected);
   }
 
   ThemeData updateThemes(int colorIndex, bool useMaterial3, bool useLightMode) {
@@ -232,6 +247,7 @@ class _WorksOutState extends State<WorksOut> {
     setState(() {
       useLightMode = !useLightMode;
       themeData = updateThemes(colorSelected, useMaterial3, useLightMode);
+      _saveSettings();
     });
   }
 
@@ -409,6 +425,7 @@ class _WorksOutState extends State<WorksOut> {
       } else {
         colorSelected = value;
         themeData = updateThemes(colorSelected, useMaterial3, useLightMode);
+        _saveSettings();
       }
     });
   }
@@ -421,7 +438,7 @@ class _WorksOutState extends State<WorksOut> {
           textTheme: Theme.of(context).textTheme,
         );
       case 1:
-        return const StatsScreen();
+        return StatsScreen();
       case 2:
         return const TypographyScreen();
       default:
@@ -532,7 +549,10 @@ class _WorksOutState extends State<WorksOut> {
                     ));
               });
             },
-            onSelected: (value) => handleColorSelect(context, value),
+            onSelected: (value) {
+              handleColorSelect(context, value);
+              _saveSettings();
+            },
           );
         }),
       ],
@@ -541,6 +561,7 @@ class _WorksOutState extends State<WorksOut> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData themeData = updateThemes(colorSelected, useMaterial3, useLightMode);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Workout Manager',
