@@ -397,8 +397,6 @@ class _WorksOutState extends State<WorksOut> {
                       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                     ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                     onPressed: () {
-                      //TODO: request change in the firestore document AWAIT
-                      //also upload the changenameController if its not ''
                       Navigator.of(context).pop();
                     },
                     child: const Text('Save'),

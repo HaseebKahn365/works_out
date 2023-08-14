@@ -48,9 +48,12 @@ class ComponentScreen extends StatefulWidget {
 }
 
 class _ComponentScreenState extends State<ComponentScreen> {
+  bool showLinearProgressIndicator = false; //used when uploading data to firestore
+
   final FocusNode _textFieldFocusNode1 = FocusNode();
 
   final FocusNode _textFieldFocusNode2 = FocusNode();
+
   bool onlineStatus = false;
 
   final TextEditingController pushUpController = TextEditingController();
@@ -164,7 +167,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
                                 height: 75,
                                 child: TextField(
                                   controller: _textFieldControllerForNewWorkout,
-                                  maxLength: 20, // Limit the length to 20 characters
+                                  maxLength: 15, // Limit the length to 20 characters
                                   decoration: InputDecoration(
                                     prefixIcon: Icon(
                                       FluentIcons.add_12_regular,
@@ -177,7 +180,7 @@ class _ComponentScreenState extends State<ComponentScreen> {
                                   buildCounter: (BuildContext context,
                                       {int? currentLength, int? maxLength, bool? isFocused}) {
                                     currentLength ??= 0;
-                                    return Text('${(20 - currentLength)} left', style: TextStyle(fontSize: 11));
+                                    return Text('${(15 - currentLength)} left', style: TextStyle(fontSize: 11));
                                   },
                                 ),
                               ),
@@ -220,9 +223,23 @@ class _ComponentScreenState extends State<ComponentScreen> {
                     child: const Text('Create workout'),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                //show linear progress indicator here:
+
+                (showLinearProgressIndicator == true)
+                    ? const Column(
+                        children: [
+                          SizedBox(
+                            height: 15,
+                          ),
+                          LinearProgressIndicator(),
+                          SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      )
+                    : SizedBox(
+                        height: 15,
+                      ),
 
                 // Text field
                 Padding(
@@ -360,16 +377,21 @@ class _ComponentScreenState extends State<ComponentScreen> {
                         onPressed: () {
                           //I should be able to save the CustomWorkoutList to the local storage
 
-                          print('tring to save to local storage: save button: ');
-                          //I should also be able to save the modified workouts in the customWorkoutList to the local storage
                           int pushUpValue = int.tryParse(pushUpController.text) ?? 0;
                           int pullUpValue = int.tryParse(pullUpController.text) ?? 0;
 
                           if (pushUpValue >= 10 && pushUpValue < 267 || pullUpValue > 5 && pullUpValue < 110) {
+                            setState(() {
+                              showLinearProgressIndicator = true;
+                            });
                             submitFormOnSave().then((value) {
                               clearTextFieldsAndCounters();
                               _textFieldFocusNode2.unfocus();
                               _textFieldFocusNode1.unfocus();
+
+                              setState(() {
+                                showLinearProgressIndicator = false;
+                              });
                             });
                           }
                           if (pushUpValue > 0) {
